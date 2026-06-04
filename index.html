@@ -438,38 +438,43 @@ function nextRound() {
 function beep(type) {
   try {
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const vol = 2.0;
     if(type === 'round') {
-      // 3 kurze laute Beeps
-      [0, 0.25, 0.5].forEach((t, i) => {
+      [0, 0.35, 0.7].forEach((t, i) => {
         const o = ctx.createOscillator();
         const g = ctx.createGain();
+        o.type = 'square';
         o.connect(g); g.connect(ctx.destination);
-        o.frequency.value = i === 2 ? 1047 : 880;
-        g.gain.setValueAtTime(1.2, ctx.currentTime + t);
-        g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + t + 0.2);
+        o.frequency.value = i === 2 ? 1200 : 900;
+        g.gain.setValueAtTime(vol, ctx.currentTime + t);
+        g.gain.linearRampToValueAtTime(0, ctx.currentTime + t + 0.28);
         o.start(ctx.currentTime + t);
-        o.stop(ctx.currentTime + t + 0.2);
+        o.stop(ctx.currentTime + t + 0.3);
       });
     } else if(type === 'finish') {
-      // langer tiefer Ton
-      const o = ctx.createOscillator();
-      const g = ctx.createGain();
-      o.connect(g); g.connect(ctx.destination);
-      o.frequency.value = 660;
-      g.gain.setValueAtTime(1.2, ctx.currentTime);
-      g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.2);
-      o.start(ctx.currentTime);
-      o.stop(ctx.currentTime + 1.2);
+      [0, 0.3, 0.6, 0.9, 1.2].forEach((t, i) => {
+        const o = ctx.createOscillator();
+        const g = ctx.createGain();
+        o.type = 'square';
+        o.connect(g); g.connect(ctx.destination);
+        o.frequency.value = [1047, 988, 880, 784, 660][i];
+        g.gain.setValueAtTime(vol, ctx.currentTime + t);
+        g.gain.linearRampToValueAtTime(0, ctx.currentTime + t + 0.25);
+        o.start(ctx.currentTime + t);
+        o.stop(ctx.currentTime + t + 0.28);
+      });
     } else if(type === 'warn') {
-      // 1 Beep bei 3 Sekunden
-      const o = ctx.createOscillator();
-      const g = ctx.createGain();
-      o.connect(g); g.connect(ctx.destination);
-      o.frequency.value = 1200;
-      g.gain.setValueAtTime(0.8, ctx.currentTime);
-      g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
-      o.start(ctx.currentTime);
-      o.stop(ctx.currentTime + 0.15);
+      [0, 0.2].forEach(t => {
+        const o = ctx.createOscillator();
+        const g = ctx.createGain();
+        o.type = 'square';
+        o.connect(g); g.connect(ctx.destination);
+        o.frequency.value = 1400;
+        g.gain.setValueAtTime(vol, ctx.currentTime + t);
+        g.gain.linearRampToValueAtTime(0, ctx.currentTime + t + 0.15);
+        o.start(ctx.currentTime + t);
+        o.stop(ctx.currentTime + t + 0.18);
+      });
     }
   } catch(e) {}
 }
